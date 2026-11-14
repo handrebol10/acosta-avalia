@@ -30,6 +30,12 @@ Reúne num lugar só o que os principais apps do mercado (Avaliação Física PR
 
 Os resultados são calculados **ao vivo**, enquanto você digita, e tudo é salvo automaticamente.
 
+## Usar online
+
+**https://handrebol10.github.io/acosta-avalia/**
+
+Abre direto no navegador, sem instalar nada, inclusive no celular ou tablet. Os dados continuam salvos só no aparelho em que você estiver usando. A versão online e a versão local guardam dados **separados**: para passar de uma para a outra, use **Ajustes → Exportar / Restaurar backup**.
+
 ## Como usar no seu computador
 
 1. Instale o [Node.js](https://nodejs.org) (versão LTS), uma vez só.
