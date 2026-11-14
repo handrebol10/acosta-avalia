@@ -74,7 +74,8 @@ npm run dev
 React 19 + TypeScript + Vite. Sem servidor e sem banco de dados externo.
 
 ```bash
-npm run build   # gera a versão final em dist/
+npm run build    # gera a versão final em dist/
+npm run deploy   # gera e publica a versão online no GitHub Pages (branch gh-pages)
 ```
 
 ---
