@@ -1,0 +1,155 @@
+import type { CircKey, FmsKey, FoldKey, PhotoView, ProtocolKey, Sex } from './types'
+
+export const CIRCS: { key: CircKey; label: string; hint: string; group: 'tronco' | 'membros' }[] = [
+  { key: 'pescoco', label: 'Pescoço', group: 'tronco', hint: 'Logo abaixo da cartilagem tireoide (pomo de Adão), fita perpendicular ao eixo do pescoço.' },
+  { key: 'ombro', label: 'Ombros', group: 'tronco', hint: 'Maior circunferência sobre os deltoides, ao final de uma expiração normal.' },
+  { key: 'torax', label: 'Tórax', group: 'tronco', hint: 'Na altura dos mamilos (homens) ou logo abaixo das axilas (mulheres), ao final da expiração.' },
+  { key: 'cintura', label: 'Cintura', group: 'tronco', hint: 'Menor circunferência entre a última costela e a crista ilíaca, com o abdômen relaxado.' },
+  { key: 'abdomen', label: 'Abdômen', group: 'tronco', hint: 'Na altura da cicatriz umbilical, ao final de uma expiração normal.' },
+  { key: 'quadril', label: 'Quadril', group: 'tronco', hint: 'Maior protuberância dos glúteos, com pés juntos e glúteos relaxados.' },
+  { key: 'bracoD', label: 'Braço relaxado D', group: 'membros', hint: 'Ponto médio entre acrômio e olécrano, braço estendido ao lado do corpo.' },
+  { key: 'bracoE', label: 'Braço relaxado E', group: 'membros', hint: 'Ponto médio entre acrômio e olécrano, braço estendido ao lado do corpo.' },
+  { key: 'bracoContD', label: 'Braço contraído D', group: 'membros', hint: 'Maior circunferência do braço com o cotovelo flexionado a 90° e bíceps contraído.' },
+  { key: 'bracoContE', label: 'Braço contraído E', group: 'membros', hint: 'Maior circunferência do braço com o cotovelo flexionado a 90° e bíceps contraído.' },
+  { key: 'antebracoD', label: 'Antebraço D', group: 'membros', hint: 'Maior circunferência do antebraço, braço estendido e mão supinada.' },
+  { key: 'antebracoE', label: 'Antebraço E', group: 'membros', hint: 'Maior circunferência do antebraço, braço estendido e mão supinada.' },
+  { key: 'coxaD', label: 'Coxa D', group: 'membros', hint: 'Coxa medial: ponto médio entre a prega inguinal e a borda superior da patela.' },
+  { key: 'coxaE', label: 'Coxa E', group: 'membros', hint: 'Coxa medial: ponto médio entre a prega inguinal e a borda superior da patela.' },
+  { key: 'panturrilhaD', label: 'Panturrilha D', group: 'membros', hint: 'Maior circunferência da perna, com o peso distribuído igualmente nos dois pés.' },
+  { key: 'panturrilhaE', label: 'Panturrilha E', group: 'membros', hint: 'Maior circunferência da perna, com o peso distribuído igualmente nos dois pés.' },
+]
+
+export const FOLDS: Record<FoldKey, { label: string; hint: string }> = {
+  triceps: { label: 'Tríceps', hint: 'Vertical, na face posterior do braço, no ponto médio entre acrômio e olécrano.' },
+  biceps: { label: 'Bíceps', hint: 'Vertical, na face anterior do braço, no mesmo nível da dobra do tríceps.' },
+  subescapular: { label: 'Subescapular', hint: 'Oblíqua (45°), 2 cm abaixo do ângulo inferior da escápula.' },
+  peitoral: { label: 'Peitoral', hint: 'Diagonal, entre a linha axilar anterior e o mamilo (1/2 em homens, 1/3 em mulheres).' },
+  axilarMedia: { label: 'Axilar média', hint: 'Vertical, na linha axilar média, na altura do processo xifoide.' },
+  suprailiaca: { label: 'Supra-ilíaca', hint: 'Oblíqua, logo acima da crista ilíaca, na linha axilar anterior.' },
+  abdominal: { label: 'Abdominal', hint: 'Vertical (J&P) ou horizontal (Guedes), cerca de 2 cm à direita da cicatriz umbilical.' },
+  coxa: { label: 'Coxa', hint: 'Vertical, na face anterior da coxa, no ponto médio entre a prega inguinal e a patela.' },
+  panturrilha: { label: 'Panturrilha', hint: 'Vertical, na face medial da perna, na altura da maior circunferência.' },
+}
+
+export const PROTOCOLS: Record<
+  ProtocolKey,
+  { label: string; short: string; folds: (sex: Sex) => FoldKey[]; about: string }
+> = {
+  jp3: {
+    label: 'Jackson & Pollock — 3 dobras',
+    short: 'J&P 3',
+    folds: (s) => (s === 'M' ? ['peitoral', 'abdominal', 'coxa'] : ['triceps', 'suprailiaca', 'coxa']),
+    about: 'Rápido e muito usado em academias. Estima a densidade corporal; o %G vem pela equação de Siri ou Brozek. Indicado para adultos de 18 a 61 anos.',
+  },
+  jp7: {
+    label: 'Jackson & Pollock — 7 dobras',
+    short: 'J&P 7',
+    folds: () => ['peitoral', 'axilarMedia', 'triceps', 'subescapular', 'abdominal', 'suprailiaca', 'coxa'],
+    about: 'Mais completo que o de 3 dobras: considera a gordura distribuída por todo o tronco e membros. Boa escolha para acompanhar atletas.',
+  },
+  guedes: {
+    label: 'Guedes (1985) — 3 dobras',
+    short: 'Guedes',
+    folds: (s) => (s === 'M' ? ['triceps', 'suprailiaca', 'abdominal'] : ['subescapular', 'suprailiaca', 'coxa']),
+    about: 'Protocolo brasileiro, validado em universitários brasileiros de 17 a 29 anos.',
+  },
+  durnin: {
+    label: 'Durnin & Womersley — 4 dobras',
+    short: 'Durnin',
+    folds: () => ['biceps', 'triceps', 'subescapular', 'suprailiaca'],
+    about: 'Usa coeficientes por faixa etária (17 a 50+ anos). Boa opção para adultos mais velhos e para a população em geral.',
+  },
+  faulkner: {
+    label: 'Faulkner — 4 dobras',
+    short: 'Faulkner',
+    folds: () => ['triceps', 'subescapular', 'suprailiaca', 'abdominal'],
+    about: 'Calcula o %G direto, sem densidade. Simples e popular no Brasil, muito usado em atletas e praticantes de musculação.',
+  },
+}
+
+export const PARQ = [
+  'Algum médico já disse que você possui algum problema de coração e que só deveria fazer atividade física com supervisão profissional?',
+  'Você sente dores no peito quando pratica atividade física?',
+  'No último mês, você sentiu dores no peito sem estar praticando atividade física?',
+  'Você perde o equilíbrio por causa de tontura ou já perdeu a consciência?',
+  'Você tem algum problema ósseo ou articular que poderia piorar com a atividade física?',
+  'Você toma atualmente algum medicamento para pressão arterial ou para o coração?',
+  'Sabe de alguma outra razão pela qual você não deveria praticar atividade física?',
+]
+
+export const PHOTO_VIEWS: { key: PhotoView; label: string }[] = [
+  { key: 'front', label: 'Anterior' },
+  { key: 'side', label: 'Lateral' },
+  { key: 'back', label: 'Posterior' },
+]
+
+export const POSTURE: { view: PhotoView; items: { id: string; label: string }[] }[] = [
+  {
+    view: 'front',
+    items: [
+      { id: 'cabeca-inclinada', label: 'Cabeça inclinada lateralmente' },
+      { id: 'ombro-elevado-d', label: 'Ombro direito elevado' },
+      { id: 'ombro-elevado-e', label: 'Ombro esquerdo elevado' },
+      { id: 'crista-assimetrica', label: 'Assimetria de cristas ilíacas' },
+      { id: 'joelho-valgo', label: 'Joelhos valgos (para dentro)' },
+      { id: 'joelho-varo', label: 'Joelhos varos (para fora)' },
+      { id: 'pe-plano', label: 'Pé plano / pronado' },
+      { id: 'pe-cavo', label: 'Pé cavo / supinado' },
+      { id: 'halux-valgo', label: 'Hálux valgo' },
+    ],
+  },
+  {
+    view: 'side',
+    items: [
+      { id: 'cabeca-anteriorizada', label: 'Cabeça anteriorizada' },
+      { id: 'ombros-protusos', label: 'Ombros protusos (rodados à frente)' },
+      { id: 'hipercifose', label: 'Hipercifose torácica' },
+      { id: 'retificacao-toracica', label: 'Retificação torácica' },
+      { id: 'hiperlordose', label: 'Hiperlordose lombar' },
+      { id: 'retificacao-lombar', label: 'Retificação lombar' },
+      { id: 'anteversao', label: 'Anteversão pélvica' },
+      { id: 'retroversao', label: 'Retroversão pélvica' },
+      { id: 'joelho-recurvado', label: 'Joelho recurvado (hiperextensão)' },
+      { id: 'joelho-fletido', label: 'Joelho fletido' },
+    ],
+  },
+  {
+    view: 'back',
+    items: [
+      { id: 'escapula-alada', label: 'Escápula alada' },
+      { id: 'escapula-abduzida', label: 'Escápulas abduzidas (afastadas)' },
+      { id: 'escoliose', label: 'Desvio lateral da coluna (escoliose)' },
+      { id: 'talles-assimetrico', label: 'Triângulo de Talles assimétrico' },
+      { id: 'calcaneo-valgo', label: 'Calcâneo valgo' },
+      { id: 'calcaneo-varo', label: 'Calcâneo varo' },
+    ],
+  },
+]
+
+export const POSTURE_LABEL: Record<string, string> = Object.fromEntries(
+  POSTURE.flatMap((g) => g.items.map((i) => [i.id, i.label])),
+)
+
+export const FMS: { key: FmsKey; label: string; hint: string; bilateral: boolean }[] = [
+  { key: 'squat', label: 'Agachamento profundo', bilateral: false, hint: 'Bastão acima da cabeça, pés na largura dos ombros. Avalia mobilidade bilateral e simétrica de quadril, joelho e tornozelo.' },
+  { key: 'hurdle', label: 'Passo sobre barreira', bilateral: true, hint: 'Passar uma perna sobre a barreira na altura da tuberosidade tibial. Avalia estabilidade em apoio unipodal.' },
+  { key: 'lunge', label: 'Avanço em linha', bilateral: true, hint: 'Avanço com os pés alinhados e bastão nas costas. Avalia estabilidade e controle em base estreita.' },
+  { key: 'shoulder', label: 'Mobilidade de ombro', bilateral: true, hint: 'Mãos fechadas se aproximam nas costas (uma por cima, outra por baixo). Mede a distância entre os punhos. Faça também o teste de impacto: dor = 0.' },
+  { key: 'aslr', label: 'Elevação ativa da perna estendida', bilateral: true, hint: 'Deitado, elevar a perna estendida. Avalia flexibilidade de isquiotibiais e estabilidade da pelve.' },
+  { key: 'pushup', label: 'Flexão de estabilidade do tronco', bilateral: false, hint: 'Flexão com o corpo subindo como uma peça só. Faça também o teste de extensão: dor = 0.' },
+  { key: 'rotary', label: 'Estabilidade rotatória', bilateral: true, hint: 'Em quatro apoios, estender braço e perna e trazer cotovelo ao joelho. Faça também o teste de flexão: dor = 0.' },
+]
+
+export const FMS_SCORES = [
+  { v: 0, label: 'Dor', desc: 'Sentiu dor durante o movimento ou no teste de liberação. Encaminhar para avaliação clínica.' },
+  { v: 1, label: 'Não executa', desc: 'Não consegue completar o padrão de movimento.' },
+  { v: 2, label: 'Com compensação', desc: 'Completa o movimento, mas com compensações.' },
+  { v: 3, label: 'Perfeito', desc: 'Executa o padrão corretamente, sem compensações.' },
+]
+
+export const ACTIVITY_LEVELS = [
+  { v: 'sedentario', label: 'Sedentário', factor: 1.2 },
+  { v: 'leve', label: 'Levemente ativo', factor: 1.375 },
+  { v: 'moderado', label: 'Moderadamente ativo', factor: 1.55 },
+  { v: 'intenso', label: 'Muito ativo', factor: 1.725 },
+] as const

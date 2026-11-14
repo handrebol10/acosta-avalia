@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 98" role="img" aria-label="Logo André Luiz Costa">
+  <defs>
+    <linearGradient id="ouro" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F7DC86"/>
+      <stop offset=".38" stop-color="#D4A23C"/>
+      <stop offset=".62" stop-color="#F3D373"/>
+      <stop offset="1" stop-color="#A8731F"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#ouro)" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke-width="6" d="M65 92 L 28 55 C 15 42, 16 22, 32 15.5 C 46 10, 59 17, 65 30 C 71 17, 84 10, 98 15.5 C 114 22, 115 42, 102 55 Z"/>
+    <path stroke-width="5.5" d="M19 48 H 46 L 50.5 40 L 56.5 60 L 63 36 L 69 57 L 73 48 H 111"/>
+  </g>
+  <g fill="url(#ouro)">
+    <rect x="11" y="31" width="8.5" height="34" rx="3"/>
+    <rect x="2.5" y="37.5" width="6.5" height="21" rx="2.5"/>
+    <rect x="110.5" y="31" width="8.5" height="34" rx="3"/>
+    <rect x="121" y="37.5" width="6.5" height="21" rx="2.5"/>
+  </g>
+</svg>
