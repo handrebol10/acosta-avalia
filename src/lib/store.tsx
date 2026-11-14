@@ -12,6 +12,8 @@ interface Store {
   students: Student[]
   assessments: Assessment[]
   settings: Settings
+  saving: boolean
+  savedAt: Date | null
   upsertStudent: (s: Student) => void
   deleteStudent: (id: string) => Promise<void>
   upsertAssessment: (a: Assessment) => void
@@ -28,6 +30,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [students, setStudents] = useState<Student[]>([])
   const [assessments, setAssessments] = useState<Assessment[]>([])
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS)
+  const [saving, setSaving] = useState(false)
+  const [savedAt, setSavedAt] = useState<Date | null>(null)
 
   useEffect(() => {
     Promise.all([get<Student[]>(K.students), get<Assessment[]>(K.assessments), get<Settings>(K.settings)]).then(([s, a, st]) => {
@@ -44,8 +48,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!ready) return
     window.clearTimeout(timer.current)
     timer.current = window.setTimeout(() => {
-      set(K.students, students)
-      set(K.assessments, assessments)
+      setSaving(true)
+      Promise.all([set(K.students, students), set(K.assessments, assessments)])
+        .then(() => setSavedAt(new Date()))
+        .finally(() => setSaving(false))
     }, 300)
   }, [students, assessments, ready])
 
@@ -109,6 +115,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       students,
       assessments,
       settings,
+      saving,
+      savedAt,
       upsertStudent,
       deleteStudent,
       upsertAssessment,
@@ -117,7 +125,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       exportBackup,
       importBackup,
     }),
-    [ready, students, assessments, settings, upsertStudent, deleteStudent, upsertAssessment, deleteAssessment, exportBackup, importBackup],
+    [ready, students, assessments, settings, saving, savedAt, upsertStudent, deleteStudent, upsertAssessment, deleteAssessment, exportBackup, importBackup],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

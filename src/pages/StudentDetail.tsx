@@ -23,6 +23,19 @@ const METRICS: { v: MetricKey; label: string; unit: string }[] = [
   { v: 'vo2', label: 'VO₂máx', unit: '' },
 ]
 
+/** Em qual direção a mudança é positiva para o aluno (neutro quando depende do objetivo) */
+const GOOD_WHEN: Record<MetricKey, 'up' | 'down' | 'neutral'> = {
+  weight: 'neutral',
+  fat: 'down',
+  lean: 'up',
+  fatMass: 'down',
+  bmi: 'neutral',
+  cintura: 'down',
+  abdomen: 'down',
+  quadril: 'neutral',
+  vo2: 'up',
+}
+
 function metricValue(k: MetricKey, a: Assessment, s: Student): number | undefined {
   const r = computeResults(a, s)
   switch (k) {
@@ -101,18 +114,7 @@ export default function StudentDetail() {
           </div>
           <div className="row wrap">
             <button className="btn" onClick={() => setEditing(true)}>
-              <Pencil size={16} /> Editar
-            </button>
-            <button
-              className="btn danger"
-              onClick={async () => {
-                if (confirm(`Excluir ${s.name} e todas as avaliações? Essa ação não pode ser desfeita.`)) {
-                  await deleteStudent(s.id)
-                  nav('/alunos')
-                }
-              }}
-            >
-              <Trash2 size={16} />
+              <Pencil size={16} aria-hidden="true" /> Editar
             </button>
             <button className="btn primary" onClick={startAssessment}>
               <Plus size={17} /> Nova avaliação
@@ -129,10 +131,10 @@ export default function StudentDetail() {
               <p className="sub">Escolha o indicador para ver a evolução entre as avaliações</p>
             </div>
           </div>
-          <div style={{ marginBottom: 12 }}>
-            <Seg value={metric} onChange={setMetric} options={METRICS.map((m) => ({ v: m.v, label: m.label }))} />
+          <div style={{ marginBottom: 16 }}>
+            <Seg label="Indicador do gráfico" value={metric} onChange={setMetric} options={METRICS.map((m) => ({ v: m.v, label: m.label }))} />
           </div>
-          <LineChart points={points} unit={unit} />
+          <LineChart points={points} unit={unit} label={METRICS.find((m) => m.v === metric)!.label} goodWhen={GOOD_WHEN[metric]} />
         </section>
       )}
 
@@ -236,6 +238,13 @@ export default function StudentDetail() {
       {editing && (
         <StudentForm
           initial={s}
+          onDelete={async () => {
+            if (confirm(`Excluir ${s.name} e todas as avaliações? Essa ação não pode ser desfeita.`)) {
+              setEditing(false)
+              await deleteStudent(s.id)
+              nav('/alunos')
+            }
+          }}
           onClose={() => setEditing(false)}
           onSave={(x) => {
             upsertStudent(x)

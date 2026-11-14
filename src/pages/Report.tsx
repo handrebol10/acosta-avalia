@@ -101,7 +101,7 @@ export default function Report() {
           {r.comp && (
             <div style={{ marginTop: 22 }}>
               <FatZones pct={r.comp.fatPct} sex={s.sex} />
-              <p className="small" style={{ color: '#8a968f', marginTop: 10 }}>
+              <p className="small" style={{ color: '#65716a', marginTop: 10 }}>
                 Método: {r.comp.methodLabel}. Peso estimado com {r.targetFat}% de gordura: {fmt(r.targetWeight, 1, 'kg')}.
               </p>
             </div>
@@ -241,7 +241,7 @@ export default function Report() {
           </section>
         )}
 
-        <footer className="small" style={{ color: '#8a968f', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+        <footer className="small" style={{ color: '#65716a', paddingTop: 18, display: 'flex', justifyContent: 'space-between', gap: 12 }}>
           <span>ACOSTA Avalia · Método ACOSTA</span>
           <span>Valores estimados por equações de referência; servem para acompanhar a evolução individual.</span>
         </footer>

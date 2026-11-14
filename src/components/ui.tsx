@@ -1,12 +1,34 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { Info, Lightbulb, X } from 'lucide-react'
+import { AlertTriangle, Info, Lightbulb, X } from 'lucide-react'
 import type { Classification, Sex } from '../lib/types'
 import { FAT_ZONES, fmt } from '../lib/calc'
 
+/** Dica didática: abre ao passar o mouse, com foco do teclado ou com um toque (celular) */
 export function Tip({ text }: { text: string }) {
+  const [open, setOpen] = useState(false)
   return (
-    <span className="tip" tabIndex={0} aria-label={text}>
-      <Info size={14} />
+    <span
+      className={`tip ${open ? 'open' : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-label={`Dica: ${text}`}
+      aria-expanded={open}
+      onClick={(e) => {
+        // não deixa o clique ativar o campo do <label>
+        e.preventDefault()
+        e.stopPropagation()
+        setOpen((o) => !o)
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          setOpen((o) => !o)
+        }
+        if (e.key === 'Escape') setOpen(false)
+      }}
+      onBlur={() => setOpen(false)}
+    >
+      <Info size={15} aria-hidden="true" />
       <span className="bubble" role="tooltip">
         {text}
       </span>
@@ -14,16 +36,54 @@ export function Tip({ text }: { text: string }) {
   )
 }
 
-export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+export function Field({
+  label,
+  hint,
+  required,
+  error,
+  children,
+}: {
+  label: string
+  hint?: string
+  required?: boolean
+  error?: string
+  children: ReactNode
+}) {
   return (
     <label className="field">
       <span className="lbl">
         {label}
+        {required && (
+          <span className="req" aria-hidden="true">
+            *
+          </span>
+        )}
         {hint && <Tip text={hint} />}
       </span>
       {children}
+      {error && (
+        <span className="field-msg err" role="alert">
+          <AlertTriangle size={14} aria-hidden="true" /> {error}
+        </span>
+      )}
     </label>
   )
+}
+
+/** Faixas plausíveis por unidade: avisam erros de digitação (ex.: 625 kg em vez de 62,5) */
+const RANGES: Record<string, [number, number]> = {
+  kg: [20, 300],
+  cm: [10, 250],
+  mm: [1, 80],
+  bpm: [30, 220],
+  mmHg: [40, 260],
+  '%': [2, 70],
+  rep: [0, 200],
+  m: [200, 5000],
+  min: [5, 40],
+  kgf: [1, 120],
+  h: [0, 16],
+  'ml/kg/min': [10, 95],
 }
 
 /** Campo numérico que aceita vírgula ou ponto e devolve number | undefined */
@@ -31,28 +91,39 @@ export function NumInput({
   value,
   onChange,
   unit,
-  step = 'any',
+  range,
   placeholder,
+  label,
 }: {
   value: number | undefined
   onChange: (v: number | undefined) => void
   unit?: string
-  step?: string
+  range?: [number, number]
   placeholder?: string
+  label?: string
 }) {
   const [text, setText] = useState(value === undefined ? '' : String(value).replace('.', ','))
+  const [touched, setTouched] = useState(false)
   useEffect(() => {
     const parsed = parseNum(text)
     if (parsed !== value) setText(value === undefined ? '' : String(value).replace('.', ','))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
+
+  const [lo, hi] = range ?? (unit ? RANGES[unit] ?? [-Infinity, Infinity] : [-Infinity, Infinity])
+  const invalid = text.trim() !== '' && value === undefined
+  const outOfRange = value !== undefined && (value < lo || value > hi)
+  const msg = touched ? (invalid ? 'Número inválido. Use apenas dígitos e vírgula.' : outOfRange ? `Valor incomum (esperado entre ${lo} e ${hi} ${unit ?? ''}). Confira a digitação.` : '') : ''
+
   const input = (
     <input
-      className="input tnum"
+      className={`input tnum ${touched && invalid ? 'err' : touched && outOfRange ? 'warn' : ''}`}
       inputMode="decimal"
       value={text}
-      step={step}
       placeholder={placeholder ?? '0'}
+      aria-label={label}
+      aria-invalid={touched && (invalid || outOfRange) ? true : undefined}
+      onBlur={() => setTouched(true)}
       onChange={(e) => {
         const t = e.target.value.replace(/[^\d,.-]/g, '')
         setText(t)
@@ -60,12 +131,24 @@ export function NumInput({
       }}
     />
   )
-  if (!unit) return input
   return (
-    <div className="unit-wrap">
-      {input}
-      <span className="unit">{unit}</span>
-    </div>
+    <>
+      {unit ? (
+        <div className="unit-wrap">
+          {input}
+          <span className="unit" aria-hidden="true">
+            {unit}
+          </span>
+        </div>
+      ) : (
+        input
+      )}
+      {msg && (
+        <span className={`field-msg ${invalid ? 'err' : ''}`} role="alert">
+          <AlertTriangle size={14} aria-hidden="true" /> {msg}
+        </span>
+      )}
+    </>
   )
 }
 
@@ -84,13 +167,15 @@ export function Seg<T extends string>({
   value,
   options,
   onChange,
+  label,
 }: {
   value: T
   options: { v: T; label: string }[]
   onChange: (v: T) => void
+  label?: string
 }) {
   return (
-    <div className="seg" role="radiogroup">
+    <div className="seg" role="radiogroup" aria-label={label}>
       {options.map((o) => (
         <button key={o.v} type="button" role="radio" aria-checked={value === o.v} className={value === o.v ? 'on' : ''} onClick={() => onChange(o.v)}>
           {o.label}
@@ -205,9 +290,15 @@ export function FatZones({ pct, sex }: { pct: number; sex: Sex }) {
 
 export function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+      opener?.focus?.() // devolve o foco para quem abriu a janela
+    }
   }, [onClose])
   return (
     <div className="backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>

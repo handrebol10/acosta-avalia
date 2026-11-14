@@ -1,13 +1,16 @@
+import { lazy } from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import { StoreProvider } from './lib/store'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import Students from './pages/Students'
-import StudentDetail from './pages/StudentDetail'
-import AssessmentEditor from './pages/AssessmentEditor'
-import Report from './pages/Report'
-import Guide from './pages/Guide'
-import SettingsPage from './pages/SettingsPage'
+
+// Telas mais pesadas carregam sob demanda
+const StudentDetail = lazy(() => import('./pages/StudentDetail'))
+const AssessmentEditor = lazy(() => import('./pages/AssessmentEditor'))
+const Report = lazy(() => import('./pages/Report'))
+const Guide = lazy(() => import('./pages/Guide'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 
 export default function App() {
   return (

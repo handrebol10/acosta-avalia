@@ -28,7 +28,7 @@ const STEPS = ['Anamnese', 'Medidas', 'Composição', 'Postural', 'Funcional', '
 
 export default function AssessmentEditor() {
   const { id } = useParams()
-  const { assessments, students, upsertAssessment } = useStore()
+  const { assessments, students, upsertAssessment, saving, savedAt } = useStore()
   const [step, setStep] = useState(0)
   const nav = useNavigate()
 
@@ -81,21 +81,42 @@ export default function AssessmentEditor() {
           </div>
         </div>
         <div className="row">
-          <span className="save-dot">Salvo automaticamente</span>
-          <Link to={`/relatorio/${a.id}`} className="btn primary">
-            <FileText size={17} /> Relatório
+          <span className={`save-dot ${saving ? 'saving' : ''}`} role="status" aria-live="polite">
+            {saving ? 'Salvando…' : savedAt ? `Salvo às ${savedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : 'Salvamento automático'}
+          </span>
+          <Link to={`/relatorio/${a.id}`} className="btn">
+            <FileText size={17} aria-hidden="true" /> Relatório
           </Link>
         </div>
       </div>
 
       <nav className="steps" aria-label="Etapas da avaliação">
         {STEPS.map((label, i) => (
-          <button key={label} className={`step ${step === i ? 'on' : ''} ${done[i] ? 'done' : ''}`} onClick={() => go(i)}>
-            <span className="n">{done[i] && step !== i ? <Check size={13} /> : i + 1}</span>
+          <button
+            key={label}
+            className={`step ${step === i ? 'on' : ''} ${done[i] ? 'done' : ''}`}
+            onClick={() => go(i)}
+            aria-current={step === i ? 'step' : undefined}
+            aria-label={`Etapa ${i + 1} de ${STEPS.length}: ${label}${done[i] ? ' (preenchida)' : ''}`}
+          >
+            <span className="n" aria-hidden="true">
+              {done[i] && step !== i ? <Check size={13} /> : i + 1}
+            </span>
             {label}
           </button>
         ))}
       </nav>
+      <div className="progress" aria-hidden="true">
+        <span>
+          Etapa {step + 1} de {STEPS.length}
+        </span>
+        <div className="progress-bar">
+          <span style={{ width: `${(done.filter(Boolean).length / STEPS.length) * 100}%` }} />
+        </div>
+        <span>
+          {done.filter(Boolean).length}/{STEPS.length} preenchidas
+        </span>
+      </div>
 
       <div className="editor">
         <div className="stack">
@@ -150,6 +171,7 @@ function StepAnamnese({ a, update }: StepProps) {
               {q}
             </p>
             <Seg
+              label={`Pergunta ${i + 1}`}
               value={an.parq[i] === null ? '' : an.parq[i] ? 'sim' : 'nao'}
               onChange={(v) => update((d) => void (d.anamnese.parq[i] = v === 'sim'))}
               options={[
@@ -519,12 +541,13 @@ function PhotoSlot({ label, photoKey, onChange }: { label: string; photoKey?: st
             <div className="grid-overlay" />
             <div className="plumb" />
             <div className="actions">
-              <label className="btn icon sm" htmlFor={inputId} title="Trocar foto">
+              <label className="btn icon sm" htmlFor={inputId} title="Trocar foto" aria-label={`Trocar foto ${label}`}>
                 <RefreshCw size={15} />
               </label>
               <button
                 className="btn icon sm"
                 title="Remover foto"
+                aria-label={`Remover foto ${label}`}
                 onClick={async () => {
                   if (photoKey) await deletePhoto(photoKey)
                   onChange(undefined)
@@ -567,7 +590,7 @@ function StepFuncional({ a, s, r, update }: StepProps & { s: Student; r: Results
             <NumInput unit="rep" value={f.situps} onChange={(v) => update((d) => void (d.fitness.situps = v))} />
           </Field>
           <Field label="Sentar e alcançar (Wells)" hint="Melhor de 3 tentativas no banco de Wells, joelhos estendidos. Zero do banco em 26 cm (padrão CSEP).">
-            <NumInput unit="cm" value={f.sitReach} onChange={(v) => update((d) => void (d.fitness.sitReach = v))} />
+            <NumInput unit="cm" range={[0, 60]} value={f.sitReach} onChange={(v) => update((d) => void (d.fitness.sitReach = v))} />
             {isNum(f.sitReach) && <Badge c={classifyReach(f.sitReach, s.sex, r.age)} />}
           </Field>
           <Field label="Preensão manual D" hint="Dinamômetro, melhor de 3 tentativas, cotovelo a 90°.">
