@@ -1445,3 +1445,65 @@ input[type='number']::-webkit-inner-spin-button {
 .grid > * {
   min-width: 0;
 }
+
+/* Barra de exportação do relatório */
+.export {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow);
+}
+.export-head h2 {
+  font-size: 1.05rem;
+}
+.export-head .sub {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.btn.whats {
+  background: #1f7a4d;
+  border-color: #1f7a4d;
+  color: #fff;
+}
+.btn.whats:hover {
+  filter: brightness(1.08);
+}
+.export-msg {
+  font-size: 0.86rem;
+  font-weight: 550;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+.export-msg.ok {
+  background: var(--good-bg);
+  color: var(--good);
+}
+.export-msg.err {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 620px) {
+  .export-actions .btn {
+    flex: 1 1 calc(50% - 8px);
+  }
+}

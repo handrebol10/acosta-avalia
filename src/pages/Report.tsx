@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
-import { Activity, ArrowLeft, HeartPulse, PersonStanding, Printer, Ruler, Scale } from 'lucide-react'
+import { Activity, ArrowLeft, HeartPulse, PersonStanding, Ruler, Scale } from 'lucide-react'
+import { ExportActions } from '../components/ExportActions'
 import { usePhoto, useStore } from '../lib/store'
 import {
   classifyBmi,
@@ -41,14 +42,11 @@ export default function Report() {
     <div className="page">
       <div className="row no-print wrap">
         <Link to={`/avaliacao/${a.id}`} className="btn ghost sm">
-          <ArrowLeft size={16} /> Voltar para a avaliação
+          <ArrowLeft size={16} aria-hidden="true" /> Voltar para a avaliação
         </Link>
-        <span className="spacer" />
-        <span className="small muted">Use “Salvar como PDF” na janela de impressão para enviar ao aluno.</span>
-        <button className="btn primary" onClick={() => window.print()}>
-          <Printer size={17} /> Imprimir / PDF
-        </button>
       </div>
+
+      <ExportActions a={a} st={s} history={assessments.filter((x) => x.studentId === s.id)} settings={settings} />
 
       <article className="report">
         <header className="report-head">

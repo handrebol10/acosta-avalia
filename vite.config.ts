@@ -8,4 +8,6 @@ export default defineConfig({
   plugins: [react()],
   server: { port: 5180, strictPort: true, open: true },
   preview: { port: 5180, strictPort: true, open: true },
+  // a biblioteca de PDF (~1,2 MB) só é baixada quando um relatório é aberto
+  build: { chunkSizeWarningLimit: 1400 },
 })

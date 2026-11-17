@@ -24,7 +24,8 @@ Reúne num lugar só o que os principais apps do mercado (Avaliação Física PR
 | **Metabolismo** | TMB por Katch-McArdle ou Mifflin-St Jeor e gasto energético diário |
 | **Postural** | Fotos anterior, lateral e posterior com grade e fio de prumo, além de um checklist de 25 desvios |
 | **Funcional** | Flexão de braço, abdominal, banco de Wells, preensão manual, VO₂máx (Cooper, Rockport, banco de Queens) e FMS completo |
-| **Relatório** | Relatório com a sua marca, comparação com a avaliação anterior, classificações coloridas, impressão e PDF |
+| **Relatório em PDF** | PDF completo com a sua marca: todas as medidas, PAR-Q, dobras, testes, FMS, fotos posturais, gráficos de evolução, histórico e assinatura, com numeração de páginas |
+| **Envio ao aluno** | Baixar PDF, compartilhar com o arquivo anexado (celular e Windows 11), WhatsApp e e-mail já endereçados ao aluno com mensagem pronta |
 | **Evolução** | Gráficos de peso, %G, massa magra, massa gorda, IMC, perímetros e VO₂máx |
 | **Didático** | Cada medida tem uma dica de como medir, cada protocolo é explicado, e há uma página de guia com todas as fórmulas |
 
